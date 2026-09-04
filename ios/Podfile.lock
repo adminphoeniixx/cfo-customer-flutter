@@ -1,0 +1,52 @@
+PODS:
+  - connectivity_plus (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_secure_storage (6.0.0):
+    - Flutter
+  - razorpay-core-pod (1.0.7)
+  - razorpay-pod (1.5.7):
+    - razorpay-core-pod (= 1.0.7)
+  - razorpay_flutter (1.1.10):
+    - Flutter
+    - razorpay-pod
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - razorpay_flutter (from `.symlinks/plugins/razorpay_flutter/ios`)
+  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - razorpay-core-pod
+    - razorpay-pod
+
+EXTERNAL SOURCES:
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
+  Flutter:
+    :path: Flutter
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  razorpay_flutter:
+    :path: ".symlinks/plugins/razorpay_flutter/ios"
+  sqflite_darwin:
+    :path: ".symlinks/plugins/sqflite_darwin/darwin"
+
+SPEC CHECKSUMS:
+  connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
+  razorpay-core-pod: c7f3ac3d214c1a7fac4e9a59c1de7eac02130573
+  razorpay-pod: 3c91ef4895d389968a5c56a6f1e9943e44b50fa0
+  razorpay_flutter: 84b3bfd206ae9c9c2a9ba585524a1b3d8102b6c1
+  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
+
+PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+
+COCOAPODS: 1.16.2
