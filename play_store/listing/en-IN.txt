@@ -1,0 +1,24 @@
+APP NAME
+CFO Shop
+
+SHORT DESCRIPTION (80 characters maximum)
+Shop curated products, save favourites, and manage orders in one place.
+
+FULL DESCRIPTION
+CFO Shop makes everyday shopping simple. Browse a curated selection across fashion, beauty, home, electronics and more.
+
+Discover products, compare prices, save favourites, add items to your cart and place orders securely. Track your orders and manage your account from one convenient app.
+
+Key features:
+• Browse curated products across popular categories
+• Search products and discover daily deals
+• Save favourites for later
+• Add items to your cart and checkout securely
+• Track orders and manage account preferences
+• Review product details, delivery information and return options
+
+SUPPORT EMAIL
+Replace with the official customer-support email before publishing.
+
+PRIVACY POLICY URL
+Replace with the live privacy-policy URL before publishing.

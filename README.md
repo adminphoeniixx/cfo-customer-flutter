@@ -1,17 +1,18 @@
-# cfo_shop
+# CFO Shop
 
-A new Flutter project.
+CFO Shop is the customer storefront for browsing products, managing a cart, placing orders, tracking deliveries, and managing account details.
 
-## Getting Started
+## Release build
 
-This project is a starting point for a Flutter application.
+Android release builds require a private signing keystore. Create `android/key.properties` from `android/key.properties.example`, then set the correct values. Never commit the real file or keystore.
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter analyze
+flutter build appbundle --release
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+The upload bundle is created at `build/app/outputs/bundle/release/app-release.aab`.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Branding
+
+The source artwork for the CFO Shop launcher icon is at `assets/branding/cfo_shop_launcher_icon.png`. Native Android and iOS launcher icon sizes are generated from it and already included.

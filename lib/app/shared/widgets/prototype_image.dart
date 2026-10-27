@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../core/network/api_client.dart';
 import '../../core/theme/app_colors.dart';
 
 class PrototypeImage extends StatelessWidget {
@@ -27,7 +28,7 @@ class PrototypeImage extends StatelessWidget {
         ? const Icon(Icons.image_outlined, color: AppColors.ink3)
         : _looksLikeUrl(s)
         ? CachedNetworkImage(
-            imageUrl: s,
+            imageUrl: s.startsWith('/') ? '${ApiClient.baseUrl}$s' : s,
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(color: AppColors.surface2),
             errorWidget: (context, url, error) => const Icon(

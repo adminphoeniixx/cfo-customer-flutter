@@ -1,4 +1,4 @@
-package com.cfoshop.cfo_shop
+package cfocoomerce.com
 
 import io.flutter.embedding.android.FlutterActivity
 

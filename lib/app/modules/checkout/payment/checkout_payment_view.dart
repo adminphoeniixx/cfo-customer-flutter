@@ -278,9 +278,8 @@ class _Card extends StatelessWidget {
 
 class _Mark extends StatelessWidget {
   final bool selected;
-  final bool square;
 
-  const _Mark({required this.selected, this.square = false});
+  const _Mark({required this.selected});
 
   @override
   Widget build(BuildContext context) {
@@ -289,8 +288,7 @@ class _Mark extends StatelessWidget {
       height: 19,
       margin: const EdgeInsets.only(top: 1),
       decoration: BoxDecoration(
-        shape: square ? BoxShape.rectangle : BoxShape.circle,
-        borderRadius: square ? BorderRadius.circular(4) : null,
+        shape: BoxShape.circle,
         border: Border.all(
           color: selected ? AppColors.action : AppColors.line,
           width: 2,
@@ -303,7 +301,7 @@ class _Mark extends StatelessWidget {
                 height: 9,
                 decoration: BoxDecoration(
                   color: AppColors.action,
-                  borderRadius: BorderRadius.circular(square ? 1 : 9),
+                  borderRadius: BorderRadius.circular(9),
                 ),
               ),
             )
