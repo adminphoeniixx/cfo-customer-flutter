@@ -190,6 +190,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.2"
+  flutter_cashfree_pg_sdk:
+    dependency: "direct main"
+    description:
+      name: flutter_cashfree_pg_sdk
+      sha256: af3aa7d989130294a9411620293ed29ae13f53c911af7877aed5c75820ca2fd0
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.0+54"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -320,6 +328,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  iconsax_plus:
+    dependency: "direct main"
+    description:
+      name: iconsax_plus
+      sha256: e9e51b0652a1d3ceea5fedbfc2c1bb4ad432c2ceb7be7de2e30caf085678933c
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   intl:
     dependency: "direct main"
     description:

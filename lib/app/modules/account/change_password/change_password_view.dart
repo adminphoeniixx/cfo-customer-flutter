@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -73,7 +74,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
           if (error != null)
             Padding(
               padding: const EdgeInsets.only(top: 8),
-              child: Text(error!, style: const TextStyle(color: Colors.red)),
+              child: Text(error!, style: const TextStyle(color: AppColors.critical)),
             ),
           const SizedBox(height: AppSpace.lg),
           PrimaryButton(

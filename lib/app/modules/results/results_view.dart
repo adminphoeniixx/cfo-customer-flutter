@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../core/auth/wishlist_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -6,6 +7,7 @@ import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../routes/app_routes.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/app_sheet.dart';
 import '../../shared/widgets/cfo_app_bar.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/product_card.dart';
@@ -37,7 +39,7 @@ class ResultsView extends GetView<ResultsController> {
     return Scaffold(
       backgroundColor: AppColors.ground,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(52),
+        preferredSize: const Size.fromHeight(CfoAppBar.barHeight),
         child: Obx(
           () => CfoAppBar(
             title: controller.title,
@@ -45,7 +47,7 @@ class ResultsView extends GetView<ResultsController> {
                 '${controller.products.length} product${controller.products.length == 1 ? '' : 's'}',
             actions: [
               CfoAppBarAction(
-                icon: AppSvgIcons.heart,
+                icon: AppIcons.heart,
                 tooltip: 'Wishlist',
                 badgeCount: () => Get.find<WishlistService>().ids.length,
                 onTap: () => Get.toNamed(AppRoutes.wishlist),
@@ -70,7 +72,7 @@ class ResultsView extends GetView<ResultsController> {
               }
               if (controller.products.isEmpty) {
                 return EmptyState(
-                  icon: Icons.search_off_rounded,
+                  icon: IconsaxPlusLinear.search_zoom_out,
                   title: 'No products match',
                   message:
                       'Try clearing a filter, or widening the price range.',
@@ -124,25 +126,23 @@ class _Toolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 48,
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.line)),
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       child: Row(
         children: [
           Expanded(
             child: _ToolbarButton(
-              label: '↕ ${ResultsView.sortLabel(sortKey)}',
+              icon: IconsaxPlusLinear.sort,
+              label: ResultsView.sortLabel(sortKey),
               onTap: () => _openSort(context, controller),
             ),
           ),
-          Container(width: 1, color: AppColors.line),
+          const SizedBox(width: 10),
           Expanded(
             child: _ToolbarButton(
+              icon: AppIcons.filter,
               label:
-                  '⚙ Filters${activeFilterCount > 0 ? ' · $activeFilterCount' : ''}',
+                  'Filters${activeFilterCount > 0 ? ' · $activeFilterCount' : ''}',
               active: activeFilterCount > 0,
               onTap: () => _openFilters(context, controller),
             ),
@@ -154,11 +154,13 @@ class _Toolbar extends StatelessWidget {
 }
 
 class _ToolbarButton extends StatelessWidget {
+  final IconData icon;
   final String label;
   final bool active;
   final VoidCallback onTap;
 
   const _ToolbarButton({
+    required this.icon,
     required this.label,
     required this.onTap,
     this.active = false,
@@ -166,19 +168,35 @@ class _ToolbarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onTap,
-      style: TextButton.styleFrom(
-        foregroundColor: active ? AppColors.action : AppColors.ink2,
-        padding: const EdgeInsets.all(12),
-        textStyle: AppTextStyles.bodyMedium.copyWith(
-          fontSize: 12.5,
-          fontWeight: FontWeight.w700,
-          height: 1,
+    final fg = active ? AppColors.onBrand : AppColors.ink;
+    return Material(
+      color: active ? AppColors.brand : AppColors.surface,
+      borderRadius: BorderRadius.circular(AppRadius.chip),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: SizedBox(
+          height: 42,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 17, color: fg),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.label.copyWith(
+                    color: fg,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        shape: const RoundedRectangleBorder(),
       ),
-      child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
     );
   }
 }
@@ -186,6 +204,7 @@ class _ToolbarButton extends StatelessWidget {
 void _openSort(BuildContext context, ResultsController controller) {
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
       return _SheetPanel(
@@ -388,51 +407,7 @@ class _SheetPanel extends StatelessWidget {
   const _SheetPanel({required this.title, required this.child});
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadius.sheet),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: AppTextStyles.h3.copyWith(fontSize: 18),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close, size: 22),
-                    color: AppColors.ink,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints.tightFor(
-                      width: 36,
-                      height: 36,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              child,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AppSheet(title: title, child: child);
 }
 
 class _OptionRow extends StatelessWidget {
@@ -588,17 +563,19 @@ class _FilterChipButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: onTap,
       style: OutlinedButton.styleFrom(
-        foregroundColor: selected ? AppColors.brand : AppColors.ink2,
-        backgroundColor: selected ? AppColors.brandSoft : AppColors.surface,
-        side: BorderSide(color: selected ? AppColors.brand : AppColors.line),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        minimumSize: const Size(0, 32),
+        foregroundColor: selected ? AppColors.onBrand : AppColors.ink,
+        backgroundColor: selected ? AppColors.brand : AppColors.surface,
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.chip),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        minimumSize: const Size(0, 38),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         textStyle: AppTextStyles.bodyMedium.copyWith(
-          fontSize: 12,
+          fontSize: 12.5,
           height: 1,
-          fontWeight: FontWeight.w500,
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
         ),
       ),
       child: Text(label),
@@ -620,21 +597,20 @@ class _SheetButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 46,
+      height: 50,
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           elevation: 0,
           backgroundColor: ghost ? AppColors.surface : AppColors.brand,
-          foregroundColor: ghost ? AppColors.action : AppColors.onBrand,
-          side: BorderSide(color: ghost ? AppColors.line : AppColors.brand),
+          foregroundColor: ghost ? AppColors.ink : AppColors.onBrand,
+          side: BorderSide.none,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.button),
           ),
           textStyle: AppTextStyles.button.copyWith(
             fontSize: 14,
             height: 1,
-            letterSpacing: 0.02,
           ),
         ),
         child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),

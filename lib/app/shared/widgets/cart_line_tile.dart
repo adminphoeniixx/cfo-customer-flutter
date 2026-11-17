@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/models/cart.dart';
@@ -199,7 +200,7 @@ class _QtyStepper extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _stepBtn(
-            Icons.remove,
+            IconsaxPlusLinear.minus,
             quantity > 1 ? () => onChanged?.call(quantity - 1) : null,
           ),
           Container(
@@ -213,7 +214,7 @@ class _QtyStepper extends StatelessWidget {
             child: Text('$quantity', style: AppTextStyles.bodyMedium),
           ),
           _stepBtn(
-            Icons.add,
+            IconsaxPlusLinear.add,
             quantity < 10 ? () => onChanged?.call(quantity + 1) : null,
           ),
         ],

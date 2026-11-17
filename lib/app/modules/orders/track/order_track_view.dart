@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -424,10 +425,7 @@ class _ActionRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Text(
-              '›',
-              style: TextStyle(color: AppColors.ink3, fontSize: 18, height: 1),
-            ),
+            const Icon(IconsaxPlusLinear.arrow_right_3, size: 18, color: AppColors.ink3),
           ],
         ),
       ),
@@ -448,7 +446,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: child,

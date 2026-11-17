@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -9,6 +10,7 @@ import '../../../shared/utils/cfo_toast.dart';
 import '../../../shared/widgets/cfo_app_bar.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/prototype_image.dart';
+import '../../../shared/widgets/app_sheet.dart';
 import 'package:get/get.dart';
 
 class PaymentsInfoView extends StatefulWidget {
@@ -71,23 +73,19 @@ class _PaymentsInfoViewState extends State<PaymentsInfoView> {
     final ctrl = TextEditingController();
     final vpa = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add UPI ID'),
+      builder: (ctx) => AppDialogFrame(
+        title: 'Add UPI ID',
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          decoration: const InputDecoration(hintText: 'yourname@bank'),
+          decoration: const InputDecoration(
+            hintText: 'yourname@bank',
+            fillColor: AppColors.ground,
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
+        confirmLabel: 'Save',
+        onCancel: () => Navigator.pop(ctx),
+        onConfirm: () => Navigator.pop(ctx, ctrl.text.trim()),
       ),
     );
     if (vpa == null || vpa.isEmpty) return;
@@ -162,7 +160,7 @@ class _PaymentsInfoViewState extends State<PaymentsInfoView> {
           const _SectionTitle('Saved cards'),
           const SizedBox(height: 9),
           if (_methodsOf('card').isEmpty)
-            const EmptyState(icon: Icons.credit_card, title: 'No saved cards')
+            const EmptyState(icon: IconsaxPlusLinear.card, title: 'No saved cards')
           else
             _Card(
               children: [
@@ -181,7 +179,7 @@ class _PaymentsInfoViewState extends State<PaymentsInfoView> {
           const _SectionTitle('UPI'),
           const SizedBox(height: 9),
           if (_methodsOf('upi').isEmpty)
-            const EmptyState(icon: Icons.bolt, title: 'No saved UPI')
+            const EmptyState(icon: IconsaxPlusLinear.flash_1, title: 'No saved UPI')
           else
             _Card(
               children: [
@@ -323,7 +321,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(

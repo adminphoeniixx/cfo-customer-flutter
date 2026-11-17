@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -13,7 +14,7 @@ class EmptyState extends StatelessWidget {
 
   const EmptyState({
     super.key,
-    this.icon = Icons.inbox_outlined,
+    this.icon = IconsaxPlusLinear.direct_inbox,
     required this.title,
     this.message,
     this.actionLabel,
@@ -31,18 +32,29 @@ class EmptyState extends StatelessWidget {
             Container(
               width: 84,
               height: 84,
-              decoration: const BoxDecoration(color: AppColors.brandSoft, shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                color: AppColors.brandSoft,
+                shape: BoxShape.circle,
+              ),
               child: Icon(icon, size: 40, color: AppColors.brand),
             ),
             const SizedBox(height: AppSpace.lg),
             Text(title, style: AppTextStyles.h3, textAlign: TextAlign.center),
             if (message != null) ...[
               const SizedBox(height: AppSpace.xs),
-              Text(message!, style: AppTextStyles.body.copyWith(color: AppColors.ink3), textAlign: TextAlign.center),
+              Text(
+                message!,
+                style: AppTextStyles.body.copyWith(color: AppColors.ink3),
+                textAlign: TextAlign.center,
+              ),
             ],
             if (actionLabel != null) ...[
               const SizedBox(height: AppSpace.lg),
-              PrimaryButton(label: actionLabel!, onPressed: onAction, expand: false),
+              PrimaryButton(
+                label: actionLabel!,
+                onPressed: onAction,
+                expand: false,
+              ),
             ],
           ],
         ),

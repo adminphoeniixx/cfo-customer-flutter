@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/auth/account_badge_service.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../shared/widgets/app_icons.dart';
 import '../account/account_view.dart';
@@ -31,13 +32,23 @@ class NavView extends GetView<NavController> {
     return Obx(() {
       final cartCount = cart.cart.value?.totals.itemsCount ?? 0;
       final accountCount = accountBadge?.pendingReviewsCount.value ?? 0;
-      return Scaffold(
-        body: IndexedStack(index: controller.tabIndex.value, children: pages),
-        bottomNavigationBar: _TabBar(
-          currentIndex: controller.tabIndex.value,
-          cartCount: cartCount,
-          accountCount: accountCount,
-          onTap: controller.changeTab,
+      // System back on another tab returns to Home; on Home it leaves the app.
+      return PopScope(
+        canPop: controller.tabIndex.value == 0,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) controller.changeTab(0);
+        },
+        child: Scaffold(
+          body: IndexedStack(
+            index: controller.tabIndex.value,
+            children: pages,
+          ),
+          bottomNavigationBar: _TabBar(
+            currentIndex: controller.tabIndex.value,
+            cartCount: cartCount,
+            accountCount: accountCount,
+            onTap: controller.changeTab,
+          ),
         ),
       );
     });
@@ -61,26 +72,33 @@ class _TabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).padding.bottom;
     final tabs = [
-      (AppSvgIcons.navHome, 'Home', 0),
-      (AppSvgIcons.navCategories, 'Categories', 0),
-      (AppSvgIcons.navOrders, 'Orders', 0),
-      (AppSvgIcons.navCart, 'Cart', cartCount),
-      (AppSvgIcons.navAccount, 'Account', accountCount),
+      (AppIcons.navHome, AppIcons.navHomeActive, 'Home', 0),
+      (AppIcons.navCategories, AppIcons.navCategoriesActive, 'Categories', 0),
+      (AppIcons.navOrders, AppIcons.navOrdersActive, 'Orders', 0),
+      (AppIcons.navCart, AppIcons.navCartActive, 'Cart', cartCount),
+      (AppIcons.navAccount, AppIcons.navAccountActive, 'Account', accountCount),
     ];
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.line)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.ink.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
-      padding: EdgeInsets.fromLTRB(2, 6, 2, 9 + bottom),
+      padding: EdgeInsets.fromLTRB(4, 10, 4, 8 + bottom),
       child: Row(
         children: [
           for (var i = 0; i < tabs.length; i++)
             Expanded(
               child: _TabButton(
                 icon: tabs[i].$1,
-                label: tabs[i].$2,
-                badge: tabs[i].$3,
+                activeIcon: tabs[i].$2,
+                label: tabs[i].$3,
+                badge: tabs[i].$4,
                 selected: currentIndex == i,
                 onTap: () => onTap(i),
               ),
@@ -92,7 +110,8 @@ class _TabBar extends StatelessWidget {
 }
 
 class _TabButton extends StatelessWidget {
-  final String icon;
+  final IconData icon;
+  final IconData activeIcon;
   final String label;
   final int badge;
   final bool selected;
@@ -100,6 +119,7 @@ class _TabButton extends StatelessWidget {
 
   const _TabButton({
     required this.icon,
+    required this.activeIcon,
     required this.label,
     required this.badge,
     required this.selected,
@@ -108,49 +128,38 @@ class _TabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final color = selected ? AppColors.brand : AppColors.ink3;
+    return InkResponse(
       onTap: onTap,
+      radius: 32,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 3,
-                ),
-                decoration: BoxDecoration(
-                  color: selected ? AppColors.brandSoft : Colors.transparent,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: AppIcon(
-                  icon,
-                  size: 21,
-                  color: selected ? AppColors.action : AppColors.ink3,
-                ),
-              ),
+              AppIcon(selected ? activeIcon : icon, size: 24, color: color),
               if (badge > 0)
                 Positioned(
                   top: -5,
-                  right: -5,
+                  right: -8,
                   child: Container(
                     height: 17,
                     constraints: const BoxConstraints(minWidth: 17),
                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.brand,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(AppRadius.chip),
+                      border: Border.all(color: AppColors.surface, width: 1.5),
                     ),
                     child: Center(
                       child: Text(
                         badge > 9 ? '9+' : '$badge',
-                        style: const TextStyle(
+                        style: AppTextStyles.tag.copyWith(
                           color: AppColors.onBrand,
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 9,
                           height: 1,
+                          letterSpacing: 0,
                         ),
                       ),
                     ),
@@ -158,13 +167,13 @@ class _TabButton extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 5),
           Text(
             label,
             style: AppTextStyles.tiny.copyWith(
-              fontSize: 9.5,
-              color: selected ? AppColors.action : AppColors.ink3,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              fontSize: 11.5,
+              color: color,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
         ],

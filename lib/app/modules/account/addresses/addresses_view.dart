@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
@@ -66,7 +67,7 @@ class _AddressesViewState extends State<AddressesView> {
           ? const Center(child: CircularProgressIndicator())
           : addresses.isEmpty
           ? EmptyState(
-              icon: Icons.location_on_outlined,
+              icon: IconsaxPlusLinear.location,
               title: 'No saved addresses',
               actionLabel: 'Add address',
               onAction: () =>
@@ -118,7 +119,6 @@ class _AddressCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

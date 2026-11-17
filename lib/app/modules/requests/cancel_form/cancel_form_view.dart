@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
@@ -104,7 +105,7 @@ class _CancelFormViewState extends State<CancelFormView> {
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       error!,
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(color: AppColors.critical),
                     ),
                   ),
               ],
@@ -141,7 +142,7 @@ class _OptionRow extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              selected ? Icons.radio_button_checked : Icons.radio_button_off,
+              selected ? IconsaxPlusBold.record_circle : IconsaxPlusLinear.record,
               color: selected ? AppColors.action : AppColors.line,
             ),
             const SizedBox(width: 10),
@@ -163,7 +164,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: child,

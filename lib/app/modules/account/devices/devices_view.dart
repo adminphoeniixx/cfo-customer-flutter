@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -51,7 +52,7 @@ class _DevicesViewState extends State<DevicesView> {
           ? const Center(child: CircularProgressIndicator())
           : devices.isEmpty
           ? const EmptyState(
-              icon: Icons.devices_other_outlined,
+              icon: IconsaxPlusLinear.monitor_mobbile,
               title: 'No other devices',
             )
           : ListView.builder(
@@ -63,7 +64,7 @@ class _DevicesViewState extends State<DevicesView> {
                 final isCurrent = d['is_current'] == true;
                 return Card(
                   child: ListTile(
-                    leading: const Icon(Icons.smartphone_outlined),
+                    leading: const Icon(IconsaxPlusLinear.mobile),
                     title: Text(
                       '${d['device_name'] ?? d['name'] ?? 'Unknown device'}',
                     ),
@@ -74,7 +75,7 @@ class _DevicesViewState extends State<DevicesView> {
                         ? null
                         : IconButton(
                             icon: const Icon(
-                              Icons.logout,
+                              IconsaxPlusLinear.logout,
                               color: AppColors.critical,
                             ),
                             onPressed: () => _revoke(tokenId),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -6,6 +7,8 @@ import '../../../data/models/app_content.dart';
 import '../../../data/repositories/account_repository.dart';
 import '../../../shared/utils/cfo_toast.dart';
 import '../../../shared/widgets/cfo_app_bar.dart';
+import '../../../shared/widgets/app_sheet.dart';
+import '../../../shared/widgets/app_logo.dart';
 import 'package:get/get.dart';
 
 class AboutView extends StatefulWidget {
@@ -47,23 +50,19 @@ class _AboutViewState extends State<AboutView> {
     try {
       final data = await _repo.legalPage(page.slug);
       if (!mounted) return;
-      showModalBottomSheet(
+      AppSheet.show(
         context: context,
-        isScrollControlled: true,
-        builder: (context) => Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${data['title'] ?? page.title}', style: AppTextStyles.h3),
-                  const SizedBox(height: 12),
-                  Text('${data['body'] ?? ''}', style: AppTextStyles.body),
-                ],
-              ),
-            ),
+        title: '${data['title'] ?? page.title}',
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.card),
+          ),
+          child: Text(
+            '${data['body'] ?? ''}',
+            style: AppTextStyles.body.copyWith(height: 1.5),
           ),
         ),
       );
@@ -87,33 +86,11 @@ class _AboutViewState extends State<AboutView> {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppRadius.card),
-              border: Border.all(color: AppColors.line),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.brand, Color(0xFFF15A24)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(
-                    'C',
-                    style: AppTextStyles.h1.copyWith(
-                      color: AppColors.onBrand,
-                      fontSize: 24,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
+                const AppLogo(size: 64),
                 const SizedBox(height: 8),
                 Text(
                   config?.storeName ?? 'CFO Shop',
@@ -168,15 +145,7 @@ class _LegalRow extends StatelessWidget {
                 ),
               ),
             ),
-            const Text(
-              '›',
-              style: TextStyle(
-                color: AppColors.ink3,
-                fontSize: 18,
-                height: 1,
-                fontFamily: 'Roboto',
-              ),
-            ),
+            const Icon(IconsaxPlusLinear.arrow_right_3, size: 18, color: AppColors.ink3),
           ],
         ),
       ),
@@ -195,7 +164,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(

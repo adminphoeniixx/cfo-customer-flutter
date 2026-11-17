@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -98,7 +99,6 @@ class _FlatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -141,15 +141,7 @@ class _HelpRow extends StatelessWidget {
             Expanded(
               child: _RowText(title: title, subtitle: subtitle),
             ),
-            const Text(
-              '›',
-              style: TextStyle(
-                color: AppColors.ink3,
-                fontSize: 18,
-                height: 1,
-                fontFamily: 'Roboto',
-              ),
-            ),
+            const Icon(IconsaxPlusLinear.arrow_right_3, size: 18, color: AppColors.ink3),
           ],
         ),
       ),

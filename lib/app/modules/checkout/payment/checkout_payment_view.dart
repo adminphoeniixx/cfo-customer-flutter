@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -35,7 +36,8 @@ class _CheckoutPaymentViewState extends State<CheckoutPaymentView> {
       body: Obx(() {
         final s = controller.summary.value;
         if (s == null) return const Center(child: CircularProgressIndicator());
-        final selected = controller.selectedPaymentMethod.value;
+        final available = controller.selectedPaymentMethod.value.isNotEmpty;
+        final gateway = controller.gateway.value;
         final address = _selectedAddress(s);
         return Column(
           children: [
@@ -46,22 +48,14 @@ class _CheckoutPaymentViewState extends State<CheckoutPaymentView> {
                 children: [
                   _Card(
                     flat: true,
-                    child: Column(
-                      children: [
-                        for (final method in s.paymentMethods)
-                          _PaymentOption(
-                            method: method,
-                            selected: selected == method.code,
-                            onTap: () =>
-                                controller.selectedPaymentMethod.value =
-                                    method.code,
-                          ),
-                      ],
+                    child: _GatewayOption(
+                      available: available,
+                      gateway: gateway,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  if (!_isCod(selected)) const _GatewayNote(),
-                  if (_isCod(selected)) _CodNote(total: s.totals.grandTotal),
+                  if (available && gateway.enabled)
+                    _GatewayNote(name: gateway.name ?? 'The payment page'),
                   const SizedBox(height: 16),
                   const _SectionTitle('Delivering to'),
                   const SizedBox(height: 8),
@@ -74,7 +68,9 @@ class _CheckoutPaymentViewState extends State<CheckoutPaymentView> {
       }),
       bottomNavigationBar: Obx(() {
         final s = controller.summary.value;
-        final total = s?.totals.grandTotal ?? 0;
+        final total =
+            controller.chargeAmount.value ?? s?.totals.grandTotal ?? 0;
+        final gatewayOn = controller.gateway.value.enabled;
         return BottomBuyBar(
           leading: SizedBox(
             width: 126,
@@ -87,9 +83,7 @@ class _CheckoutPaymentViewState extends State<CheckoutPaymentView> {
               ],
             ),
           ),
-          actionLabel: _isCod(controller.selectedPaymentMethod.value)
-              ? 'Place order'
-              : 'Pay ${formatInr(total)}',
+          actionLabel: gatewayOn ? 'Pay ${formatInr(total)}' : 'Place order',
           loading: controller.placing.value,
           onAction: controller.placeOrder,
         );
@@ -104,88 +98,97 @@ class _CheckoutPaymentViewState extends State<CheckoutPaymentView> {
     }
     return summary.addresses.isEmpty ? null : summary.addresses.first;
   }
-
-  bool _isCod(String code) =>
-      kCodPaymentMethods.contains(code) || code.toLowerCase().contains('cod');
 }
 
-class _PaymentOption extends StatelessWidget {
-  final PaymentMethodOption method;
-  final bool selected;
-  final VoidCallback onTap;
+/// The only way to pay: the gateway switched on in the admin panel offers
+/// UPI, cards, net banking and wallets itself, so the app does not list them.
+class _GatewayOption extends StatelessWidget {
+  final bool available;
+  final PaymentGatewayConfig gateway;
 
-  const _PaymentOption({
-    required this.method,
-    required this.selected,
-    required this.onTap,
-  });
+  const _GatewayOption({required this.available, required this.gateway});
 
   @override
   Widget build(BuildContext context) {
-    final disabled = !method.isAvailable;
-    return InkWell(
-      onTap: disabled ? null : onTap,
-      child: Opacity(
-        opacity: disabled ? 0.45 : 1,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _Mark(selected: selected && !disabled),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${method.icon ?? _iconFor(method.code)} ${method.name}',
-                      style: AppTextStyles.label.copyWith(
-                        fontSize: 13.5,
-                        height: 1.2,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.ink,
+    return Opacity(
+      opacity: available ? 1 : 0.45,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _Mark(selected: available),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        IconsaxPlusLinear.shield_tick,
+                        size: 18,
+                        color: AppColors.brand,
                       ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          gateway.enabled && gateway.name != null
+                              ? 'Pay with ${gateway.name}'
+                              : 'Pay online',
+                          style: AppTextStyles.label.copyWith(
+                            fontSize: 13.5,
+                            height: 1.2,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.ink,
+                          ),
+                        ),
+                      ),
+                      if (gateway.enabled && gateway.isTest) const _TestBadge(),
+                    ],
+                  ),
+                  Text(
+                    available
+                        ? 'UPI, cards, net banking and wallets.'
+                        : 'Online payment is unavailable right now.',
+                    style: AppTextStyles.caption.copyWith(
+                      fontSize: 11.5,
+                      height: 1.45,
+                      color: available ? null : AppColors.critical,
                     ),
-                    if (disabled && (method.unavailableReason ?? '').isNotEmpty)
-                      Text(
-                        method.unavailableReason!,
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 11.5,
-                          height: 1.45,
-                          color: AppColors.critical,
-                        ),
-                      )
-                    else if ((method.description ?? '').isNotEmpty)
-                      Text(
-                        method.description!,
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 11.5,
-                          height: 1.45,
-                        ),
-                      ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+}
 
-  String _iconFor(String code) {
-    final c = code.toLowerCase();
-    if (c.contains('upi')) return '⚡';
-    if (c.contains('card')) return '💳';
-    if (c.contains('net')) return '🏦';
-    if (c.contains('cod') || c.contains('cash')) return '💵';
-    return '💳';
+class _TestBadge extends StatelessWidget {
+  const _TestBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.accent,
+        borderRadius: BorderRadius.circular(AppRadius.chip),
+      ),
+      child: Text(
+        'TEST MODE',
+        style: AppTextStyles.tag.copyWith(color: AppColors.onAccent),
+      ),
+    );
   }
 }
 
 class _GatewayNote extends StatelessWidget {
-  const _GatewayNote();
+  final String name;
+  const _GatewayNote({required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -193,25 +196,7 @@ class _GatewayNote extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Text(
-          "You'll enter your UPI ID or card details on the next screen. Nothing is charged until you approve it there.",
-          style: AppTextStyles.caption.copyWith(fontSize: 12, height: 1.45),
-        ),
-      ),
-    );
-  }
-}
-
-class _CodNote extends StatelessWidget {
-  final double total;
-  const _CodNote({required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Text(
-          'Keep ${formatInr(total)} ready. The courier accepts UPI at the door too. Cash on delivery is not available on some seller items.',
+          "$name opens on the next screen, where you choose how to pay. Nothing is charged until you approve it there.",
           style: AppTextStyles.caption.copyWith(fontSize: 12, height: 1.45),
         ),
       ),
@@ -268,7 +253,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: flat ? Clip.antiAlias : Clip.none,
       child: child,

@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../core/network/api_client.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
+import 'app_icons.dart';
 
 class PrototypeImage extends StatelessWidget {
   final String? source;
@@ -24,32 +27,40 @@ class PrototypeImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = source?.trim();
+    final w = width ?? size ?? 44;
+    final h = height ?? size ?? 44;
+    final glyph = s == null ? null : AppIcons.glyph(s);
     final child = s == null || s.isEmpty
-        ? const Icon(Icons.image_outlined, color: AppColors.ink3)
+        ? const Icon(IconsaxPlusLinear.gallery, color: AppColors.ink3)
+        : glyph != null
+        ? Center(
+            child: Icon(
+              glyph,
+              size: (w < h ? w : h).clamp(16, 400) * 0.46,
+              color: AppColors.brand,
+            ),
+          )
+        : s.startsWith('assets/')
+        ? Image.asset(s, fit: BoxFit.cover)
         : _looksLikeUrl(s)
         ? CachedNetworkImage(
             imageUrl: s.startsWith('/') ? '${ApiClient.baseUrl}$s' : s,
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(color: AppColors.surface2),
             errorWidget: (context, url, error) => const Icon(
-              Icons.image_not_supported_outlined,
+              IconsaxPlusLinear.gallery_slash,
               color: AppColors.ink3,
             ),
           )
         : Center(
             child: Text(s, style: TextStyle(fontSize: fontSize)),
           );
-    final w = width ?? size ?? 44;
-    final h = height ?? size ?? 44;
     return ClipRRect(
-      borderRadius: borderRadius ?? BorderRadius.circular(9),
+      borderRadius: borderRadius ?? BorderRadius.circular(AppRadius.small),
       child: Container(
         width: w,
         height: h,
-        decoration: BoxDecoration(
-          color: AppColors.surface2,
-          border: Border.all(color: AppColors.line),
-        ),
+        decoration: const BoxDecoration(color: AppColors.surface2),
         clipBehavior: Clip.antiAlias,
         child: child,
       ),

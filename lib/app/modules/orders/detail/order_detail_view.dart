@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
@@ -66,11 +67,17 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        appBar: CfoAppBar(title: 'Order details'),
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
     final o = order;
     if (o == null) {
-      return const Scaffold(body: Center(child: Text('Order not found')));
+      return const Scaffold(
+        appBar: CfoAppBar(title: 'Order details'),
+        body: Center(child: Text('Order not found')),
+      );
     }
     return Scaffold(
       appBar: CfoAppBar(
@@ -332,7 +339,7 @@ class _SellerCard extends StatelessWidget {
             color: AppColors.surface2,
             child: Row(
               children: [
-                const Text('🏬', style: TextStyle(fontSize: 15)),
+                const Icon(IconsaxPlusLinear.shop, size: 17, color: AppColors.brand),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -670,10 +677,7 @@ class _ActionRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Text(
-              '›',
-              style: TextStyle(color: AppColors.ink3, fontSize: 18, height: 1),
-            ),
+            const Icon(IconsaxPlusLinear.arrow_right_3, size: 18, color: AppColors.ink3),
           ],
         ),
       ),
@@ -694,7 +698,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: child,

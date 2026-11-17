@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
 
 class PrimaryButton extends StatelessWidget {
@@ -46,14 +45,7 @@ class PrimaryButton extends StatelessWidget {
       child: child,
     );
     return expand
-        ? SizedBox(
-            width: double.infinity,
-            height: 54,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.button),
-              child: button,
-            ),
-          )
+        ? SizedBox(width: double.infinity, height: 54, child: button)
         : button;
   }
 }

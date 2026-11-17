@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
@@ -64,7 +65,7 @@ class _MyReviewsViewState extends State<MyReviewsView> {
                 const SizedBox(height: 9),
                 if (pending.isEmpty)
                   const EmptyState(
-                    icon: Icons.check_circle_outline,
+                    icon: IconsaxPlusLinear.tick_circle,
                     title: 'Nothing waiting for a review',
                   )
                 else
@@ -88,7 +89,7 @@ class _MyReviewsViewState extends State<MyReviewsView> {
                 const SizedBox(height: 9),
                 if (written.isEmpty)
                   const EmptyState(
-                    icon: Icons.rate_review_outlined,
+                    icon: IconsaxPlusLinear.message_edit,
                     title: 'No reviews written yet',
                   )
                 else
@@ -282,7 +283,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(

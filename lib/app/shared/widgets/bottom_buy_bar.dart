@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
 
 /// The fixed bottom action bar on product detail / cart / checkout screens.
@@ -32,21 +33,27 @@ class BottomBuyBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).padding.bottom;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.line)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.ink.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: Padding(
-        padding: EdgeInsets.only(bottom: bottom),
+        padding: EdgeInsets.fromLTRB(16, 10, 16, 10 + bottom),
         child: SizedBox(
-          height: 58,
+          height: 52,
           child: Row(
             children: [
               if (leading != null)
                 SizedBox(
-                  width: 164,
+                  width: 148,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 16),
+                    padding: EdgeInsets.zero,
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: leading!,
@@ -56,15 +63,16 @@ class BottomBuyBar extends StatelessWidget {
               if (secondaryLabel != null)
                 Expanded(
                   child: _BarButton(
-                    label: secondaryLabel!.toUpperCase(),
+                    label: secondaryLabel!,
                     onPressed: enabled ? onSecondaryAction : null,
                     filled: false,
                     loading: false,
                   ),
                 ),
+              if (secondaryLabel != null) const SizedBox(width: 10),
               Expanded(
                 child: _BarButton(
-                  label: actionLabel.toUpperCase(),
+                  label: actionLabel,
                   onPressed: enabled ? onAction : null,
                   filled: true,
                   loading: loading,
@@ -93,8 +101,13 @@ class _BarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final disabled = onPressed == null && !loading;
     return Material(
-      color: filled ? AppColors.brand : AppColors.surface,
+      color: filled
+          ? AppColors.brand.withValues(alpha: disabled ? 0.35 : 1)
+          : AppColors.brandSoft,
+      borderRadius: BorderRadius.circular(AppRadius.button),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: loading ? null : onPressed,
         child: Center(
@@ -112,7 +125,7 @@ class _BarButton extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTextStyles.button.copyWith(
                     color: filled ? AppColors.onBrand : AppColors.brand,
-                    fontSize: 13.5,
+                    fontSize: 14,
                   ),
                 ),
         ),

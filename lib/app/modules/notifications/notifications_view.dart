@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../core/auth/notifications_badge_service.dart';
 import '../../core/theme/app_dimens.dart';
@@ -58,7 +60,7 @@ class _NotificationsViewState extends State<NotificationsView> {
           ? const Center(child: CircularProgressIndicator())
           : items.isEmpty
           ? const EmptyState(
-              icon: Icons.notifications_none_rounded,
+              icon: IconsaxPlusLinear.notification,
               title: 'No notifications yet',
             )
           : RefreshIndicator(
@@ -71,8 +73,8 @@ class _NotificationsViewState extends State<NotificationsView> {
                   final n = items[i];
                   return ListTile(
                     leading: Icon(
-                      n.isRead ? Icons.notifications_none : Icons.notifications,
-                      color: n.isRead ? Colors.grey : Colors.pink,
+                      n.isRead ? IconsaxPlusLinear.notification : IconsaxPlusBold.notification,
+                      color: n.isRead ? AppColors.ink3 : AppColors.brand,
                     ),
                     title: Text(
                       n.title ?? 'Notification',

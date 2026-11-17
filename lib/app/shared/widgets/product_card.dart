@@ -44,7 +44,6 @@ class ProductCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.card),
-          border: Border.all(color: AppColors.line),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -53,19 +52,19 @@ class ProductCard extends StatelessWidget {
             Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                   child: PrototypeImage(
                     source: product.image,
                     width: double.infinity,
-                    height: wide ? 116 : 96,
+                    height: wide ? 118 : 98,
                     fontSize: wide ? 46 : 38,
-                    borderRadius: BorderRadius.circular(9),
+                    borderRadius: BorderRadius.circular(AppRadius.image),
                   ),
                 ),
                 if (onWishlistTap != null || showWishlist)
                   Positioned(
-                    right: 6,
-                    top: 6,
+                    right: 14,
+                    top: 14,
                     child: GestureDetector(
                       onTap:
                           onWishlistTap ??
@@ -74,28 +73,16 @@ class ProductCard extends StatelessWidget {
                         width: 28,
                         height: 28,
                         decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.line),
+                          color: AppColors.surface.withValues(alpha: 0.85),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: onWishlistTap != null
-                            ? AppIcon(
-                                AppSvgIcons.heart,
-                                size: 15,
-                                color: product.isWishlisted == true
-                                    ? AppColors.brand
-                                    : AppColors.ink3,
-                              )
+                            ? _heart(product.isWishlisted == true)
                             : Obx(
-                                () => AppIcon(
-                                  AppSvgIcons.heart,
-                                  size: 15,
-                                  color:
-                                      Get.find<WishlistService>().ids.contains(
-                                        product.id,
-                                      )
-                                      ? AppColors.brand
-                                      : AppColors.ink3,
+                                () => _heart(
+                                  Get.find<WishlistService>().ids.contains(
+                                    product.id,
+                                  ),
                                 ),
                               ),
                       ),
@@ -104,13 +91,12 @@ class ProductCard extends StatelessWidget {
                 if (!product.inStock)
                   Positioned.fill(
                     child: Container(
-                      color: Colors.black.withValues(alpha: 0.45),
+                      color: AppColors.heroScrim,
                       alignment: Alignment.center,
                       child: Text(
                         'OUT OF STOCK',
-                        style: AppTextStyles.tiny.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
+                        style: AppTextStyles.tag.copyWith(
+                          color: AppColors.onBrand,
                         ),
                       ),
                     ),
@@ -119,7 +105,7 @@ class ProductCard extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +113,9 @@ class ProductCard extends StatelessWidget {
                     if (product.brand != null)
                       Text(
                         product.brand!,
-                        style: AppTextStyles.tiny.copyWith(fontSize: 10.5),
+                        style: AppTextStyles.tag.copyWith(
+                          color: AppColors.ink3,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -136,7 +124,8 @@ class ProductCard extends StatelessWidget {
                       style: AppTextStyles.label.copyWith(
                         color: AppColors.ink,
                         height: 1.25,
-                        fontSize: 12.5,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -166,12 +155,9 @@ class ProductCard extends StatelessWidget {
                         '✓ CFO Assured',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.tiny.copyWith(
-                          color: AppColors.action,
-                          fontSize: 9.5,
+                        style: AppTextStyles.tag.copyWith(
+                          color: AppColors.brand,
                           height: 1,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.02,
                         ),
                       ),
                     ],
@@ -184,4 +170,12 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _heart(bool on) => Center(
+    child: AppIcon(
+      on ? AppIcons.heartFilled : AppIcons.heart,
+      size: 15,
+      color: on ? AppColors.brand : AppColors.ink2,
+    ),
+  );
 }

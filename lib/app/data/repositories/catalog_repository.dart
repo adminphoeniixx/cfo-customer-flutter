@@ -147,4 +147,21 @@ class CatalogRepository {
     final res = await _api.get('/reference');
     return ReferenceData.fromJson(Map<String, dynamic>.from(res.data));
   }, ttl: const Duration(hours: 1));
+
+  /// All 28 states and 8 union territories, A–Z, spelled the way
+  /// `POST/PUT /addresses` expects `state`.
+  Future<List<String>> states() => _cache.getOrFetch('states', () async {
+    final res = await _api.get('/states');
+    return [
+      for (final s in res.data['data'] as List) '${(s as Map)['name']}',
+    ];
+  }, ttl: const Duration(hours: 24));
+
+  /// Census towns of one state. Not exhaustive — the form also lets the
+  /// shopper type a city that is missing here.
+  Future<List<String>> cities(String state) =>
+      _cache.getOrFetch('cities:${state.toLowerCase()}', () async {
+        final res = await _api.get('/cities', query: {'state': state});
+        return [for (final c in res.data['data'] as List) '$c'];
+      }, ttl: const Duration(hours: 24));
 }

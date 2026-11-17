@@ -70,6 +70,8 @@ another shopper's order, address, request or cart line is a **404**, never a
 | GET | `/products/{id}/reviews` | Published reviews, newest first. |
 | GET | `/sellers/{vendor}` | A storefront and its listings. Approved stores only. |
 | GET | `/reference` | Payment methods, couriers, cancellation/refund reasons, refund methods, return window. |
+| GET | `/states` | All 28 states + 8 union territories, A–Z (`name`, `is_union_territory`). Also on `/reference` as `states`. |
+| GET | `/cities?state=` | Census towns of one state (any case; reply uses the list's spelling). Unknown/missing state → `422` on `state`. |
 
 **Only `active`, published products are visible** — by id, by slug, by search
 or by category. A draft is a 404 however it is reached.
@@ -169,6 +171,12 @@ POST /orders
   caught here rather than sold at the stale figure.
 - Anything that cannot be shipped stops the order with `422` and a message
   naming the line — nothing is half-sold.
+- Prices are set and checked by the marketplace (since 29 Oct 2026). If a
+  product in the cart came off sale after it was added — e.g. while its
+  price is being updated — the order is refused with `422` and an error on
+  `items`: `"{Product name} is no longer available. Remove it to continue."`
+  The app shows the message, lets the shopper remove that line, and
+  re-quotes the checkout. Nothing is charged for the removed line.
 - `payment_method` is a **code from `/reference`**, not free text. The order
   records the label the shopper saw. Cash on delivery lands `payment_status:
   pending`; everything else is treated as captured until a real gateway is
@@ -180,6 +188,17 @@ POST /orders
 - Stock comes down, the coupon's `used_count` goes up, the basket is emptied
   (saved-for-later survives), and every seller involved is notified with their
   own share rather than the shopper's total.
+
+### Paying
+
+- `GET /payments/config` (no token) — `{ enabled, gateway, name, mode, config }`.
+  Same block as `payment_gateway` on `GET /checkout`. `config` holds only the
+  public key (Razorpay `key`) or Cashfree `environment`.
+- After `POST /orders` with `payment_required: true`, call
+  `POST /payments/create-intent` and open the SDK named by **its** `gateway`,
+  passing `checkout` as it is. `amount` is what is charged after store credit.
+- `POST /payments/verify`: Razorpay sends the three `razorpay_*` fields;
+  Cashfree sends `{ "order_number": "1043" }` (`422` "not received yet" → retry).
 
 Commission never appears in a customer response. It is between the marketplace
 and the seller.
@@ -235,6 +254,8 @@ merges them and each row carries `kind`.
 | PUT | `/me/password` | `current_password` required only if one is already set. Signs every other device out. |
 | GET/POST/PUT/DELETE | `/addresses`, `/addresses/{id}` | |
 | PATCH | `/addresses/{id}/default` | |
+
+Addresses (since 30 Oct 2026): `state` must be a name from `/states` when `country` is `IN` or missing, else `422` on `state`; it is stored in the list's spelling and is still optional. `city` stays free text — the app picks it from `/cities` but keeps a "Type your city" option for places missing from the census list.
 | GET/POST/DELETE | `/wishlist`, `/wishlist/{product}` | `POST` is idempotent — the heart is a toggle and a flaky tap must not be an error. |
 | GET | `/reviews` | What you wrote, and what is still waiting to be rated. |
 | POST | `/products/{id}/reviews` | Buyers of a delivered order only. Rating again edits the first one. |
@@ -272,7 +293,9 @@ Standard Laravel shapes.
 
 Said plainly, so nobody plans around a hole:
 
-- **No payment gateway.** Non-COD orders are marked paid on placement.
+- **Payment gateway is switched on from the admin panel** (since 31 Oct 2026,
+  Razorpay or Cashfree). With none on, non-COD orders are marked paid on
+  placement. See *Paying* below.
 - **No SMS.** Login codes are logged, and returned outside production.
 - **No push delivery to shoppers.** Tokens are stored and the feed works, but
   nothing sends to them yet; the seller app's FCM path is not shared.

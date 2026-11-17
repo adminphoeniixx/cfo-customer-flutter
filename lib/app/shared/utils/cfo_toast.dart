@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
 
 class CfoToast {
@@ -22,7 +23,7 @@ class CfoToast {
       ),
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: AppColors.ink,
-      borderRadius: 6,
+      borderRadius: AppRadius.input,
       margin: const EdgeInsets.fromLTRB(14, 0, 14, 84),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       duration: const Duration(milliseconds: 2200),

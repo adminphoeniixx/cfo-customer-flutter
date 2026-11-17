@@ -91,6 +91,9 @@ class CheckoutSummary {
   final CartTotals totals;
   final List<CheckoutItem> items;
 
+  /// Which gateway the admin panel has switched on (`payment_gateway`).
+  final PaymentGatewayConfig? paymentGateway;
+
   CheckoutSummary({
     required this.addresses,
     this.selectedAddressId,
@@ -100,6 +103,7 @@ class CheckoutSummary {
     this.coupon,
     required this.totals,
     required this.items,
+    this.paymentGateway,
   });
 
   factory CheckoutSummary.fromJson(Map<String, dynamic> j) => CheckoutSummary(
@@ -123,5 +127,48 @@ class CheckoutSummary {
     items: (j['items'] as List? ?? [])
         .map((e) => CheckoutItem.fromJson(Map<String, dynamic>.from(e)))
         .toList(),
+    paymentGateway: j['payment_gateway'] is Map
+        ? PaymentGatewayConfig.fromJson(
+            Map<String, dynamic>.from(j['payment_gateway']),
+          )
+        : null,
   );
+}
+
+/// `GET /payments/config`, also sent as `payment_gateway` on `/checkout`.
+/// Only public values ever arrive here — never a key secret.
+class PaymentGatewayConfig {
+  final bool enabled;
+
+  /// `razorpay` or `cashfree`; null when no gateway is on.
+  final String? gateway;
+  final String? name;
+
+  /// `test` or `live`.
+  final String? mode;
+  final Map<String, dynamic> config;
+
+  const PaymentGatewayConfig({
+    required this.enabled,
+    this.gateway,
+    this.name,
+    this.mode,
+    this.config = const {},
+  });
+
+  /// No gateway on: online orders are settled on placement, no SDK opens.
+  static const off = PaymentGatewayConfig(enabled: false);
+
+  bool get isTest => mode == 'test';
+
+  factory PaymentGatewayConfig.fromJson(Map<String, dynamic> j) =>
+      PaymentGatewayConfig(
+        enabled: asBool(j['enabled']) && j['gateway'] != null,
+        gateway: j['gateway']?.toString(),
+        name: j['name']?.toString(),
+        mode: j['mode']?.toString(),
+        config: j['config'] is Map
+            ? Map<String, dynamic>.from(j['config'])
+            : const {},
+      );
 }

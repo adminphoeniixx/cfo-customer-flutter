@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/auth/wishlist_service.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -59,7 +60,7 @@ class _WishlistViewState extends State<WishlistView> {
           ? const Center(child: CircularProgressIndicator())
           : products.isEmpty
           ? const EmptyState(
-              icon: Icons.favorite_border,
+              icon: IconsaxPlusLinear.heart,
               title: 'Your wishlist is empty',
               message: 'Tap the heart on any product to save it here.',
             )

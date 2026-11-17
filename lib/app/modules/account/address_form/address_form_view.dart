@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
@@ -6,8 +7,10 @@ import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/address.dart';
 import '../../../data/repositories/account_repository.dart';
+import '../../../data/repositories/catalog_repository.dart';
 import '../../../shared/widgets/bottom_buy_bar.dart';
 import '../../../shared/widgets/cfo_app_bar.dart';
+import '../../../shared/widgets/search_picker_sheet.dart';
 
 class AddressFormView extends StatefulWidget {
   const AddressFormView({super.key});
@@ -18,6 +21,7 @@ class AddressFormView extends StatefulWidget {
 
 class _AddressFormViewState extends State<AddressFormView> {
   final _repo = Get.find<AccountRepository>();
+  final _catalog = Get.find<CatalogRepository>();
   Address? existing;
   late final TextEditingController firstName;
   late final TextEditingController lastName;
@@ -27,20 +31,17 @@ class _AddressFormViewState extends State<AddressFormView> {
   late final TextEditingController city;
   late final TextEditingController postcode;
   String label = 'Home';
-  String state = 'Tamil Nadu';
+
+  /// Spelled exactly as `GET /states` returns it; the API rejects others.
+  String? state;
+
+  /// True once the shopper chose "Type your city" — the city list is the
+  /// census town list, so not every village is in it.
+  bool typingCity = false;
   bool isDefault = false;
   bool saving = false;
   String? error;
   Map<String, String> fieldErrors = {};
-
-  static const states = [
-    'Tamil Nadu',
-    'Karnataka',
-    'Maharashtra',
-    'Delhi',
-    'Rajasthan',
-    'West Bengal',
-  ];
 
   @override
   void initState() {
@@ -55,8 +56,67 @@ class _AddressFormViewState extends State<AddressFormView> {
     city = TextEditingController(text: existing?.city ?? '');
     postcode = TextEditingController(text: existing?.postcode ?? '');
     label = existing?.label ?? 'Home';
-    state = states.contains(existing?.state) ? existing!.state : 'Tamil Nadu';
+    state = (existing?.state ?? '').trim().isEmpty ? null : existing!.state;
     isDefault = existing?.isDefaultShipping ?? false;
+    _canonicaliseState();
+  }
+
+  /// Saved addresses may hold any casing ("tamil nadu"); show and send the
+  /// list's spelling so the save is not refused.
+  Future<void> _canonicaliseState() async {
+    final current = state;
+    if (current == null) return;
+    try {
+      final all = await _catalog.states();
+      final match = all.firstWhereOrNull(
+        (s) => s.toLowerCase() == current.trim().toLowerCase(),
+      );
+      if (match != null && mounted) setState(() => state = match);
+    } catch (_) {
+      // Keep what was saved; the picker still works once the list loads.
+    }
+  }
+
+  Future<void> _pickState() async {
+    final picked = await SearchPickerSheet.show(
+      title: 'Select state',
+      searchHint: 'Search state',
+      selected: state,
+      load: _catalog.states,
+    );
+    final value = picked?.value;
+    if (value == null || value == state) return;
+    setState(() {
+      state = value;
+      city.clear();
+      typingCity = false;
+      fieldErrors.remove('state');
+    });
+  }
+
+  Future<void> _pickCity() async {
+    final st = state;
+    if (st == null) {
+      setState(() => fieldErrors['state'] = 'Select your state first');
+      return;
+    }
+    final picked = await SearchPickerSheet.show(
+      title: 'Select city',
+      searchHint: 'Search city in $st',
+      selected: city.text,
+      typeOwnLabel: 'Type your city',
+      load: () => _catalog.cities(st),
+    );
+    if (picked == null) return;
+    setState(() {
+      fieldErrors.remove('city');
+      if (picked.typeOwn) {
+        typingCity = true;
+      } else {
+        typingCity = false;
+        city.text = picked.value!;
+      }
+    });
   }
 
   @override
@@ -85,7 +145,7 @@ class _AddressFormViewState extends State<AddressFormView> {
       'address_line1': line1.text.trim(),
       'address_line2': line2.text.trim(),
       'city': city.text.trim(),
-      'state': state,
+      'state': ?state,
       'postcode': postcode.text.trim(),
       'is_default_shipping': isDefault,
       'is_default_billing': isDefault,
@@ -110,7 +170,7 @@ class _AddressFormViewState extends State<AddressFormView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.ground,
       appBar: CfoAppBar.editForm(
         title: existing == null ? 'New address' : 'Edit address',
         onSave: _save,
@@ -150,40 +210,50 @@ class _AddressFormViewState extends State<AddressFormView> {
           const SizedBox(height: AppSpace.sm),
           _Field(label: 'Area, street, landmark', controller: line2),
           const SizedBox(height: AppSpace.sm),
-          Row(
-            children: [
-              Expanded(
-                child: _Field(
-                  label: 'Pincode',
-                  controller: postcode,
-                  keyboardType: TextInputType.number,
-                  errorText: fieldErrors['postcode'],
-                ),
-              ),
-              const SizedBox(width: AppSpace.sm),
-              Expanded(
-                child: _Field(
-                  label: 'City',
+          _PickerField(
+            label: 'State',
+            value: state,
+            placeholder: 'Select state',
+            errorText: fieldErrors['state'],
+            onTap: _pickState,
+          ),
+          const SizedBox(height: AppSpace.sm),
+          if (typingCity)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _Field(
+                  label: 'City / town',
                   controller: city,
                   errorText: fieldErrors['city'],
                 ),
-              ),
-            ],
-          ),
+                TextButton(
+                  onPressed: _pickCity,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 36),
+                  ),
+                  child: const Text('Choose from list instead'),
+                ),
+              ],
+            )
+          else
+            _PickerField(
+              label: 'City',
+              value: city.text.trim().isEmpty ? null : city.text.trim(),
+              placeholder: state == null ? 'Select state first' : 'Select city',
+              enabled: state != null,
+              errorText: fieldErrors['city'],
+              onTap: _pickCity,
+            ),
           const SizedBox(height: AppSpace.sm),
-          Text(
-            'State',
-            style: AppTextStyles.tiny.copyWith(fontWeight: FontWeight.w700),
+          _Field(
+            label: 'Pincode',
+            controller: postcode,
+            keyboardType: TextInputType.number,
+            errorText: fieldErrors['postcode'],
           ),
-          const SizedBox(height: 6),
-          DropdownButtonFormField<String>(
-            initialValue: state,
-            items: states
-                .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                .toList(),
-            onChanged: (v) => setState(() => state = v ?? state),
-          ),
-          const SizedBox(height: AppSpace.sm),
+          const SizedBox(height: AppSpace.md),
           Text(
             'Save this address as',
             style: AppTextStyles.tiny.copyWith(fontWeight: FontWeight.w700),
@@ -211,18 +281,18 @@ class _AddressFormViewState extends State<AddressFormView> {
                   width: 22,
                   height: 22,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: isDefault ? AppColors.action : AppColors.line,
-                      width: 2,
+                      color: isDefault ? AppColors.brand : AppColors.ink3,
+                      width: 1.5,
                     ),
-                    color: isDefault ? AppColors.brandSoft : AppColors.surface,
+                    color: isDefault ? AppColors.brand : AppColors.surface,
                   ),
                   child: isDefault
                       ? const Icon(
-                          Icons.check,
-                          size: 15,
-                          color: AppColors.action,
+                          Icons.check_rounded,
+                          size: 16,
+                          color: AppColors.onBrand,
                         )
                       : null,
                 ),
@@ -309,27 +379,100 @@ class _Swatch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: selected ? AppColors.action : AppColors.line,
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.label.copyWith(
-            color: selected ? AppColors.action : AppColors.ink,
-            fontWeight: FontWeight.w700,
+    return Material(
+      color: selected ? AppColors.brand : AppColors.surface,
+      borderRadius: BorderRadius.circular(AppRadius.chip),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+          child: Text(
+            label,
+            style: AppTextStyles.label.copyWith(
+              color: selected ? AppColors.onBrand : AppColors.ink,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Looks like a text field; opens a picker on tap.
+class _PickerField extends StatelessWidget {
+  final String label;
+  final String? value;
+  final String placeholder;
+  final bool enabled;
+  final String? errorText;
+  final VoidCallback onTap;
+
+  const _PickerField({
+    required this.label,
+    required this.value,
+    required this.placeholder,
+    required this.onTap,
+    this.enabled = true,
+    this.errorText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasError = errorText != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.tiny.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 6),
+        Material(
+          color: enabled ? AppColors.surface : AppColors.surface2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.input),
+            side: BorderSide(
+              color: hasError ? AppColors.critical : AppColors.lineSoft,
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      value ?? placeholder,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body.copyWith(
+                        color: value == null ? AppColors.ink3 : AppColors.ink,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    IconsaxPlusLinear.arrow_down_1,
+                    size: 18,
+                    color: enabled ? AppColors.ink2 : AppColors.ink3,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (hasError)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              errorText!,
+              style: AppTextStyles.caption.copyWith(color: AppColors.critical),
+            ),
+          ),
+      ],
     );
   }
 }

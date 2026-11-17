@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../core/auth/wishlist_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -33,13 +34,13 @@ class ProductDetailView extends StatelessWidget {
           subtitle: p?.vendor?.name,
           actions: [
             CfoAppBarAction(
-              icon: AppSvgIcons.heart,
+              icon: AppIcons.heart,
               tooltip: 'Wishlist',
               badgeCount: () => Get.find<WishlistService>().ids.length,
               onTap: controller.toggleWishlist,
             ),
             CfoAppBarAction(
-              icon: AppSvgIcons.bag,
+              icon: AppIcons.bag,
               tooltip: 'Cart',
               badgeCount: () => Get.isRegistered<CartController>()
                   ? (Get.find<CartController>().cart.value?.totals.itemsCount ??
@@ -304,7 +305,7 @@ class _InfoRow extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-            if (chevron) const Icon(Icons.chevron_right, color: AppColors.ink3),
+            if (chevron) const Icon(IconsaxPlusLinear.arrow_right_3, color: AppColors.ink3),
           ],
         ),
       ),
@@ -424,7 +425,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: flat ? Clip.antiAlias : Clip.none,
       child: child,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../core/auth/auth_service.dart';
 import '../../core/auth/wishlist_service.dart';
@@ -15,6 +16,7 @@ import '../../shared/widgets/cart_line_tile.dart';
 import '../../shared/widgets/cfo_app_bar.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/prototype_image.dart';
+import '../../shared/widgets/app_sheet.dart';
 import 'cart_controller.dart';
 
 class CartView extends GetView<CartController> {
@@ -26,17 +28,16 @@ class CartView extends GetView<CartController> {
     final auth = Get.find<AuthService>();
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(52),
+        preferredSize: const Size.fromHeight(CfoAppBar.barHeight),
         child: Obx(() {
           final cart = controller.cart.value;
           final count = cart?.totals.itemsCount ?? 0;
           return CfoAppBar(
             title: 'Cart',
             subtitle: count > 0 ? '$count item${count == 1 ? '' : 's'}' : null,
-            showBack: false,
             actions: [
               CfoAppBarAction(
-                icon: AppSvgIcons.heart,
+                icon: AppIcons.heart,
                 tooltip: 'Wishlist',
                 badgeCount: () => Get.find<WishlistService>().ids.length,
                 onTap: () => Get.toNamed(AppRoutes.wishlist),
@@ -48,7 +49,7 @@ class CartView extends GetView<CartController> {
       body: Obx(() {
         if (!auth.isLoggedIn.value) {
           return EmptyState(
-            icon: Icons.shopping_bag_outlined,
+            icon: IconsaxPlusLinear.shopping_bag,
             title: 'Sign in to see your cart',
             message: 'Your bag is saved to your account.',
             actionLabel: 'Sign in',
@@ -61,7 +62,7 @@ class CartView extends GetView<CartController> {
         final cart = controller.cart.value;
         if (cart == null || cart.lineCount == 0) {
           return EmptyState(
-            icon: Icons.shopping_bag_outlined,
+            icon: IconsaxPlusLinear.shopping_bag,
             title: 'Your cart is empty',
             message: 'Add something you like to get started.',
             actionLabel: 'Start shopping',
@@ -207,7 +208,6 @@ class _VendorGroup extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -218,7 +218,7 @@ class _VendorGroup extends StatelessWidget {
             color: AppColors.surface2,
             child: Row(
               children: [
-                const Text('🏬', style: TextStyle(fontSize: 15)),
+                const Icon(IconsaxPlusLinear.shop, size: 17, color: AppColors.brand),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -267,7 +267,6 @@ class _CouponBox extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.line),
         ),
         child: Row(
           children: [
@@ -303,10 +302,7 @@ class _CouponBox extends StatelessWidget {
                 ],
               ),
             ),
-            const Text(
-              '›',
-              style: TextStyle(fontSize: 24, color: AppColors.ink3, height: 1),
-            ),
+            const Icon(IconsaxPlusLinear.arrow_right_3, size: 18, color: AppColors.ink3),
           ],
         ),
       ),
@@ -314,31 +310,33 @@ class _CouponBox extends StatelessWidget {
   }
 
   void _showCoupons(BuildContext context, CartController controller) {
-    Get.bottomSheet(
-      FutureBuilder<List<AvailableCoupon>>(
+    AppSheet.show(
+      context: context,
+      title: 'Available coupons',
+      child: FutureBuilder<List<AvailableCoupon>>(
         future: controller.availableCoupons(),
         builder: (context, snap) {
-          return Container(
-            constraints: BoxConstraints(maxHeight: Get.height * 0.6),
-            padding: const EdgeInsets.all(AppSpace.md),
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppRadius.sheet),
-              ),
-            ),
-            child: !snap.hasData
-                ? const Center(child: CircularProgressIndicator())
-                : ListView(
-                    shrinkWrap: true,
-                    children: [
-                      Text('Available coupons', style: AppTextStyles.h3),
-                      const SizedBox(height: AppSpace.sm),
-                      for (final c in snap.data!)
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
+          return !snap.hasData
+              ? const Padding(
+                  padding: EdgeInsets.all(AppSpace.xl),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : Column(
+                  children: [
+                    for (final c in snap.data!)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(AppRadius.card),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
                           leading: Icon(
-                            Icons.local_offer_outlined,
+                            IconsaxPlusLinear.ticket_discount,
                             color: c.usable ? AppColors.deal : AppColors.ink3,
                           ),
                           title: Text(
@@ -362,12 +360,11 @@ class _CouponBox extends StatelessWidget {
                                 )
                               : null,
                         ),
-                    ],
-                  ),
-          );
+                      ),
+                  ],
+                );
         },
       ),
-      isScrollControlled: true,
     );
   }
 }
@@ -384,7 +381,6 @@ class _TotalsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       child: Column(
         children: [

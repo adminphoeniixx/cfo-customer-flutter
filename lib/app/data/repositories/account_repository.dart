@@ -109,6 +109,27 @@ class AccountRepository {
 
   Future<void> deleteReview(int reviewId) => _api.delete('/reviews/$reviewId');
 
+  /// Flags someone else's review for the moderation team. Returns the
+  /// server's message to show the shopper.
+  Future<String> reportReview(
+    int reviewId, {
+    required String reason,
+    String? details,
+  }) async {
+    final res = await _api.post(
+      '/reviews/$reviewId/report',
+      data: {
+        'reason': reason,
+        if (details != null && details.trim().isNotEmpty)
+          'details': details.trim(),
+      },
+    );
+    final data = res.data;
+    return data is Map && data['message'] is String
+        ? data['message'] as String
+        : 'Thanks. Our team will take a look at this review.';
+  }
+
   // --- Wallet / payment methods -----------------------------------------
   Future<WalletSummary> wallet() async {
     final res = await _api.get('/wallet');

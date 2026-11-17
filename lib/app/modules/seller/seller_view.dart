@@ -47,9 +47,12 @@ class _SellerViewState extends State<SellerView> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        appBar: CfoAppBar(title: 'Seller'),
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
-    final vendor = Map<String, dynamic>.from(data?['vendor'] ?? {});
+    final vendor = Map<String, dynamic>.from(data?['vendor'] ?? data?['data'] ?? {});
     final productsData = (data?['products']?['data'] as List? ?? [])
         .map((e) => ProductCardModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();

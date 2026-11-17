@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../core/auth/auth_service.dart';
 import '../../core/auth/notifications_badge_service.dart';
+import '../../core/network/app_exception.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -11,6 +13,7 @@ import '../../data/repositories/account_repository.dart';
 import '../../routes/app_routes.dart';
 import '../../shared/utils/cfo_toast.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/app_sheet.dart';
 import '../../shared/widgets/cfo_app_bar.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/prototype_image.dart';
@@ -54,10 +57,9 @@ class _AccountViewState extends State<AccountView> {
       backgroundColor: AppColors.ground,
       appBar: CfoAppBar(
         title: 'My account',
-        showBack: false,
         actions: [
           CfoAppBarAction(
-            icon: AppSvgIcons.bell,
+            icon: AppIcons.bell,
             tooltip: 'Notifications',
             badgeCount: () =>
                 Get.find<NotificationsBadgeService>().unreadCount.value,
@@ -215,7 +217,16 @@ class _AccountViewState extends State<AccountView> {
                 Get.offAllNamed(AppRoutes.nav);
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 4),
+            Center(
+              child: TextButton(
+                onPressed: _deleteAccount,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.critical,
+                ),
+                child: const Text('Delete account'),
+              ),
+            ),
             Center(
               child: Text(
                 config?.storeName ?? 'CFO Shop',
@@ -226,6 +237,31 @@ class _AccountViewState extends State<AccountView> {
         );
       }),
     );
+  }
+}
+
+extension on _AccountViewState {
+  Future<void> _deleteAccount() async {
+    final confirm = await AppDialog.confirm(
+      context: context,
+      title: 'Delete your account?',
+      message:
+          'Your name, date of birth, photo, password, saved addresses, '
+          'saved payment methods, wishlist, basket and reviews will be '
+          'erased and you will be signed out. Past orders, invoices, '
+          'refunds and store credit are kept. This cannot be undone.',
+      confirmLabel: 'Delete account',
+      destructive: true,
+    );
+    if (confirm != true) return;
+    try {
+      await _repo.deleteMe();
+      await Get.find<AuthService>().logout(remote: false);
+      CfoToast.success('Your account has been deleted');
+      Get.offAllNamed(AppRoutes.nav);
+    } on AppException catch (e) {
+      CfoToast.error(e.message);
+    }
   }
 }
 
@@ -354,15 +390,7 @@ class _MenuRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Text(
-              '›',
-              style: TextStyle(
-                color: AppColors.ink3,
-                fontSize: 18,
-                height: 1,
-                fontFamily: 'Roboto',
-              ),
-            ),
+            const Icon(IconsaxPlusLinear.arrow_right_3, size: 18, color: AppColors.ink3),
           ],
         ),
       ),
@@ -400,7 +428,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: content,

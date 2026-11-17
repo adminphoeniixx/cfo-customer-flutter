@@ -59,11 +59,17 @@ class _RequestDetailViewState extends State<RequestDetailView> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        appBar: CfoAppBar(title: 'Request details'),
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
     final r = item;
     if (r == null) {
-      return const Scaffold(body: Center(child: Text('Request not found')));
+      return const Scaffold(
+        appBar: CfoAppBar(title: 'Request details'),
+        body: Center(child: Text('Request not found')),
+      );
     }
     return Scaffold(
       backgroundColor: AppColors.ground,
@@ -411,7 +417,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: child,

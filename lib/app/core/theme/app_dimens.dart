@@ -1,5 +1,5 @@
-/// Spacing and radius scale shared across the app, matching the prototype's
-/// CSS component shapes (cards, pills, chips, bottom-sheets).
+/// Spacing and radius scale shared across the app: soft, generously
+/// rounded white cards on an off-white ground, pill chips and badges.
 class AppSpace {
   AppSpace._();
   static const xxs = 4.0;
@@ -13,10 +13,11 @@ class AppSpace {
 
 class AppRadius {
   AppRadius._();
-  static const chip = 20.0; // pill-shaped chips / badges
-  static const button = 6.0;
-  static const card = 12.0;
-  static const sheet = 20.0; // bottom sheet top corners
-  static const input = 8.0;
-  static const small = 6.0;
+  static const chip = 100.0; // fully pill-shaped chips / badges
+  static const button = 14.0;
+  static const card = 18.0;
+  static const sheet = 26.0; // bottom sheet top corners
+  static const input = 14.0;
+  static const small = 10.0;
+  static const image = 14.0; // photos inside cards
 }

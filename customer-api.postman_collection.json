@@ -979,6 +979,66 @@
               ]
             }
           }
+        },
+        {
+          "name": "states",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/customer/states",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "customer",
+                "states"
+              ]
+            },
+            "description": "All 28 states and 8 union territories, A–Z. No token. Send `state` on addresses exactly as spelled here."
+          }
+        },
+        {
+          "name": "cities",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/customer/cities?state=Tamil Nadu",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "customer",
+                "cities"
+              ],
+              "query": [
+                {
+                  "key": "state",
+                  "value": "Tamil Nadu"
+                }
+              ]
+            },
+            "description": "Census towns of one state (any case). Unknown/missing state → 422 on `state`. Not exhaustive — the app also allows typing a city."
+          }
         }
       ]
     },

@@ -6,6 +6,8 @@ import '../../core/auth/notifications_badge_service.dart';
 import '../../core/auth/wishlist_service.dart';
 import '../../core/storage/storage_service.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../shared/widgets/app_logo.dart';
 import '../../routes/app_routes.dart';
 
 class SplashView extends StatefulWidget {
@@ -40,14 +42,23 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: AppColors.brand,
+      backgroundColor: AppColors.ground,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.storefront_rounded, color: Colors.white, size: 56),
+            AppLogo(size: 96),
             SizedBox(height: 12),
-            Text('CFO Shop', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
+            Text(
+              'CFO Shop',
+              style: TextStyle(
+                fontFamily: AppTextStyles.family,
+                color: AppColors.ink,
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.6,
+              ),
+            ),
           ],
         ),
       ),

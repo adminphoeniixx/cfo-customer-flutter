@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../routes/app_routes.dart';
+import '../../../shared/widgets/app_logo.dart';
 import '../../../shared/widgets/cfo_app_bar.dart';
 import '../../../shared/widgets/primary_button.dart';
 import 'otp_controller.dart';
@@ -16,13 +16,16 @@ class OtpView extends GetView<OtpController> {
   Widget build(BuildContext context) {
     if (!Get.isRegistered<OtpController>()) Get.put(OtpController());
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.ground,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(52),
+        preferredSize: const Size.fromHeight(CfoAppBar.barHeight),
         child: Obx(
           () => CfoAppBar(
             title: controller.codeSent.value ? 'Enter the code' : 'Sign in',
-            showBack: controller.codeSent.value,
+            showBack: controller.codeSent.value || Navigator.of(context).canPop(),
+            onBack: controller.codeSent.value
+                ? () => controller.codeSent.value = false
+                : null,
           ),
         ),
       ),
@@ -41,7 +44,7 @@ class OtpView extends GetView<OtpController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (!controller.codeSent.value) ...[
-                          const _LogoMark(),
+                          const AppLogo(size: 72),
                           const SizedBox(height: AppSpace.sm),
                           Text('CFO Shop', style: AppTextStyles.h2),
                           const SizedBox(height: AppSpace.xs),
@@ -78,25 +81,6 @@ class OtpView extends GetView<OtpController> {
                               ? controller.verify
                               : controller.requestOtp,
                         ),
-                        if (!controller.codeSent.value) ...[
-                          const SizedBox(height: AppSpace.md),
-                          const _OrDivider(),
-                          const SizedBox(height: AppSpace.sm),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 54,
-                            child: OutlinedButton(
-                              onPressed: () =>
-                                  Get.toNamed(AppRoutes.emailLogin),
-                              child: Text(
-                                'Sign in with email',
-                                style: AppTextStyles.button.copyWith(
-                                  color: AppColors.brand,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ),
@@ -192,52 +176,4 @@ class OtpView extends GetView<OtpController> {
       );
     }),
   ];
-}
-
-class _LogoMark extends StatelessWidget {
-  const _LogoMark();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          colors: [AppColors.brand, Color(0xFFE2620F)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          'C',
-          style: AppTextStyles.h2.copyWith(
-            color: AppColors.onBrand,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _OrDivider extends StatelessWidget {
-  const _OrDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(child: Divider(color: AppColors.lineSoft)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text('OR', style: AppTextStyles.caption),
-        ),
-        const Expanded(child: Divider(color: AppColors.lineSoft)),
-      ],
-    );
-  }
 }

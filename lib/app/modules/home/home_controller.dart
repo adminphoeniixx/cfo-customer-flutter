@@ -56,11 +56,12 @@ class HomeController extends GetxController {
         ),
       );
       sellers.assignAll(data['sellers'] as List? ?? []);
-      final parsedBanners = (data['banners'] as List? ?? [])
-          .map((e) => HomeBanner.fromJson(Map<String, dynamic>.from(e)))
-          .where((b) => b.active)
-          .toList()
-        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      final parsedBanners =
+          (data['banners'] as List? ?? [])
+              .map((e) => HomeBanner.fromJson(Map<String, dynamic>.from(e)))
+              .where((b) => b.active)
+              .toList()
+            ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
       banners.assignAll(parsedBanners);
     } catch (e) {
       error.value = e.toString();

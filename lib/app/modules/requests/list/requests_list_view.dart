@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -50,7 +51,7 @@ class _RequestsListViewState extends State<RequestsListView> {
           ? const Center(child: CircularProgressIndicator())
           : items.isEmpty
           ? const EmptyState(
-              icon: Icons.assignment_return_outlined,
+              icon: IconsaxPlusLinear.box_remove,
               title: 'No requests yet',
               message: 'Cancellations and returns you raise will show up here.',
             )

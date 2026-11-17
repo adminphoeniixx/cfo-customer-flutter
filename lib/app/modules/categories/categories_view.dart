@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../core/auth/notifications_badge_service.dart';
 import '../../core/auth/wishlist_service.dart';
@@ -27,18 +28,17 @@ class CategoriesView extends GetView<CategoriesController> {
     return Scaffold(
       backgroundColor: AppColors.ground,
       appBar: CfoAppBar.search(
-        showBack: false,
         searchPlaceholder: 'Search for sarees, kurtas…',
         onSearchTap: () => Get.toNamed(AppRoutes.search),
         actions: [
           CfoAppBarAction(
-            icon: AppSvgIcons.heart,
+            icon: AppIcons.heart,
             tooltip: 'Wishlist',
             badgeCount: () => Get.find<WishlistService>().ids.length,
             onTap: () => Get.toNamed(AppRoutes.wishlist),
           ),
           CfoAppBarAction(
-            icon: AppSvgIcons.bell,
+            icon: AppIcons.bell,
             tooltip: 'Notifications',
             badgeCount: () =>
                 Get.find<NotificationsBadgeService>().unreadCount.value,
@@ -109,7 +109,6 @@ class _ParentSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.card),
-            border: Border.all(color: AppColors.line),
           ),
           clipBehavior: Clip.antiAlias,
           child: parent.children.isEmpty
@@ -184,7 +183,7 @@ class _ChildRow extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.ink3),
+            const Icon(IconsaxPlusLinear.arrow_right_3, color: AppColors.ink3),
           ],
         ),
       ),

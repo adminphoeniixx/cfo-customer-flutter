@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -113,7 +114,7 @@ class _ShippingOption extends StatelessWidget {
               width: 26,
               height: 26,
               child: Icon(
-                selected ? Icons.radio_button_checked : Icons.radio_button_off,
+                selected ? IconsaxPlusBold.record_circle : IconsaxPlusLinear.record,
                 color: selected ? AppColors.action : AppColors.line,
                 size: 22,
               ),
@@ -200,7 +201,7 @@ class _VendorItemsCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
-                const Text('🏬', style: TextStyle(fontSize: 15)),
+                const Icon(IconsaxPlusLinear.shop, size: 17, color: AppColors.brand),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -369,7 +370,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: flat ? Clip.antiAlias : Clip.none,
       child: padded

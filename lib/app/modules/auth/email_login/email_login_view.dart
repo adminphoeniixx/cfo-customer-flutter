@@ -17,7 +17,7 @@ class EmailLoginView extends GetView<EmailLoginController> {
       Get.put(EmailLoginController());
     }
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.ground,
       appBar: CfoAppBar(title: 'Sign in with email'),
       body: SafeArea(
         child: SingleChildScrollView(

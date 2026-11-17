@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -41,7 +42,7 @@ class CheckoutAddressView extends StatelessWidget {
             Expanded(
               child: s.addresses.isEmpty
                   ? EmptyState(
-                      icon: Icons.location_on_outlined,
+                      icon: IconsaxPlusLinear.location,
                       title: 'No saved addresses',
                       message: 'Add an address before choosing delivery.',
                       actionLabel: 'Add address',
@@ -140,7 +141,7 @@ class _AddressCard extends StatelessWidget {
               width: 26,
               height: 26,
               child: Icon(
-                selected ? Icons.radio_button_checked : Icons.radio_button_off,
+                selected ? IconsaxPlusBold.record_circle : IconsaxPlusLinear.record,
                 color: selected ? AppColors.action : AppColors.line,
                 size: 22,
               ),

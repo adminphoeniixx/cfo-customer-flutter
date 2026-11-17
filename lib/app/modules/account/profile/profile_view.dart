@@ -8,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/repositories/account_repository.dart';
 import '../../../routes/app_routes.dart';
 import '../../../shared/utils/cfo_toast.dart';
+import '../../../shared/widgets/app_sheet.dart';
 import '../../../shared/widgets/cfo_app_bar.dart';
 
 class ProfileView extends StatefulWidget {
@@ -79,27 +80,20 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _deleteAccount() async {
-    final confirm = await showDialog<bool>(
+    final confirm = await AppDialog.confirm(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete account?'),
-        content: const Text('This will delete your customer account.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      title: 'Delete account?',
+      message:
+          'Your personal details, addresses, saved payment methods, wishlist, '
+          'basket and reviews will be erased. Past orders, invoices, refunds '
+          'and store credit are kept. This cannot be undone.',
+      confirmLabel: 'Delete',
+      destructive: true,
     );
     if (confirm != true) return;
     try {
       await _repo.deleteMe();
-      await _auth.logout();
+      await _auth.logout(remote: false);
       CfoToast.success('Account deleted');
       Get.offAllNamed(AppRoutes.nav);
     } on AppException catch (e) {
@@ -111,7 +105,7 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     final c = _auth.customer.value;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.ground,
       appBar: CfoAppBar.editForm(
         title: 'Your details',
         onSave: _save,

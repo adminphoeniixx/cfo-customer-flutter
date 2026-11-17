@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../../core/network/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -51,7 +52,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.mark_email_read_outlined, color: AppColors.brand, size: 40),
+                  const Icon(IconsaxPlusLinear.sms_tracking, color: AppColors.brand, size: 40),
                   const SizedBox(height: AppSpace.md),
                   Text('Check your email', style: AppTextStyles.h2),
                   const SizedBox(height: 6),

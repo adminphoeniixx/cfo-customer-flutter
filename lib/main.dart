@@ -18,6 +18,8 @@ class CfoShopApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       initialRoute: AppRoutes.splash,
+      // iOS has no system back button: keep edge-swipe back on every route.
+      popGesture: true,
       getPages: AppPages.routes,
       builder: (context, child) {
         final media = MediaQuery.of(context);

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_text_styles.dart';
 import '../../routes/app_routes.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/cfo_app_bar.dart';
 import '../../shared/widgets/prototype_image.dart';
 import 'search_controller.dart' as local;
 
@@ -16,70 +18,58 @@ class SearchView extends StatelessWidget {
     final textCtrl = TextEditingController();
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(52),
+        preferredSize: const Size.fromHeight(CfoAppBar.barHeight),
         child: Material(
           color: AppColors.chrome,
           elevation: 0,
           child: SafeArea(
             bottom: false,
             child: SizedBox(
-              height: 52,
+              height: CfoAppBar.barHeight,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                 child: Row(
                   children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(20),
+                    CircleIconButton(
+                      icon: AppIcons.back,
+                      tooltip: 'Back',
                       onTap: () => Get.back(),
-                      child: SizedBox(
-                        width: 34,
-                        height: 34,
-                        child: Center(
-                          child: Text(
-                            '‹',
-                            style: TextStyle(
-                              fontSize: 26,
-                              color: AppColors.chromeInk,
-                              height: 1,
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Container(
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: AppColors.ink.withValues(alpha: 0.08),
-                          ),
+                          borderRadius: BorderRadius.circular(AppRadius.input),
                         ),
                         child: Row(
                           children: [
-                            AppIcon(
-                              AppSvgIcons.search,
-                              size: 17,
-                              color: AppColors.ink3,
+                            const AppIcon(
+                              AppIcons.search,
+                              size: 20,
+                              color: AppColors.ink2,
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 10),
                             Expanded(
                               child: TextField(
                                 controller: textCtrl,
                                 autofocus: true,
-                                style: const TextStyle(
-                                  color: AppColors.ink,
+                                style: AppTextStyles.body.copyWith(
                                   fontSize: 13.5,
                                 ),
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   hintText: 'Search products, brands…',
-                                  hintStyle: TextStyle(
+                                  hintStyle: AppTextStyles.body.copyWith(
                                     color: AppColors.ink3,
                                     fontSize: 13.5,
                                   ),
+                                  filled: false,
                                   border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
                                   isDense: true,
                                 ),
                                 onChanged: controller.onQueryChanged,

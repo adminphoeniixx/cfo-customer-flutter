@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:get/get.dart';
 import '../../../core/auth/auth_service.dart';
 import '../../../core/auth/notifications_badge_service.dart';
@@ -31,19 +32,17 @@ class OrdersListView extends GetView<OrdersListController> {
       ('completed', 'Delivered'),
       ('cancelled', 'Cancelled & returned'),
     ];
-    final openedAsRoute = Get.currentRoute == AppRoutes.orders;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(52),
+        preferredSize: const Size.fromHeight(CfoAppBar.barHeight),
         child: Obx(
           () => CfoAppBar(
             title: 'My orders',
             subtitle:
                 '${controller.orders.length} order${controller.orders.length == 1 ? '' : 's'}',
-            showBack: openedAsRoute,
             actions: [
               CfoAppBarAction(
-                icon: AppSvgIcons.bell,
+                icon: AppIcons.bell,
                 tooltip: 'Notifications',
                 badgeCount: () =>
                     Get.find<NotificationsBadgeService>().unreadCount.value,
@@ -56,7 +55,7 @@ class OrdersListView extends GetView<OrdersListController> {
       body: Obx(() {
         if (!auth.isLoggedIn.value) {
           return EmptyState(
-            icon: Icons.receipt_long_outlined,
+            icon: IconsaxPlusLinear.receipt_item,
             title: 'Sign in to see your orders',
             actionLabel: 'Sign in',
             onAction: () => Get.toNamed(AppRoutes.login),
@@ -106,7 +105,7 @@ class OrdersListView extends GetView<OrdersListController> {
                   ? const Center(child: CircularProgressIndicator())
                   : controller.orders.isEmpty && controller.requests.isEmpty
                   ? const EmptyState(
-                      icon: Icons.receipt_long_outlined,
+                      icon: IconsaxPlusLinear.receipt_item,
                       title: 'No orders yet',
                       message: 'Orders you place will show up here.',
                     )
@@ -214,7 +213,7 @@ class _RequestsCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.chevron_right, color: AppColors.ink3),
+                    const Icon(IconsaxPlusLinear.arrow_right_3, color: AppColors.ink3),
                   ],
                 ),
               ),
@@ -289,7 +288,7 @@ class _OrderCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right, color: AppColors.ink3),
+                  const Icon(IconsaxPlusLinear.arrow_right_3, color: AppColors.ink3),
                 ],
               ),
             ),
@@ -347,7 +346,7 @@ class _OrderCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.chevron_right, color: AppColors.ink3),
+                    const Icon(IconsaxPlusLinear.arrow_right_3, color: AppColors.ink3),
                   ],
                 ),
               ),
@@ -466,7 +465,6 @@ class _Card extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.line),
       ),
       clipBehavior: flat ? Clip.antiAlias : Clip.none,
       child: child,

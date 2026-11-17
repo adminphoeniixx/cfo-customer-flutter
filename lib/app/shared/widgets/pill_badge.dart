@@ -38,7 +38,7 @@ class PillBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = _colors;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
         color: c.bg,
         borderRadius: BorderRadius.circular(AppRadius.chip),
@@ -47,17 +47,12 @@ class PillBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 12, color: c.fg),
+            Icon(icon, size: 11, color: c.fg),
             const SizedBox(width: 4),
           ],
           Text(
-            label,
-            style: AppTextStyles.tiny.copyWith(
-              color: c.fg,
-              fontSize: 9.5,
-              height: 1.1,
-              fontWeight: FontWeight.w700,
-            ),
+            label.toUpperCase(),
+            style: AppTextStyles.tag.copyWith(color: c.fg, height: 1.1),
           ),
         ],
       ),
